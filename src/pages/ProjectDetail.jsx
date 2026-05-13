@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -14,20 +14,23 @@ const ProjectDetail = () => {
   const [newTask, setNewTask] = useState({ title: '', description: '', dueDate: '', assignedTo: '' });
   const [newMember, setNewMember] = useState({ email: '', role: 'member' });
 
-  useEffect(() => {
-    fetchProject();
-  }, [id]);
 
-  const fetchProject = async () => {
-    try {
-      const res = await api.get(`/projects/${id}`);
-      setProject(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+ const fetchProject = useCallback(async () => {
+  try {
+    const res = await api.get(`/projects/${id}`);
+    setProject(res.data);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}, [id]);
+
+  useEffect(() => {
+  fetchProject();
+}, [fetchProject]);
+
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
